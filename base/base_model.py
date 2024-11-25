@@ -19,3 +19,8 @@ class BaseModel(ABC):
     def unload_model(self):
         # Unload the model from memory
         pass
+
+    @abstractmethod
+    def predict(self, data):
+        # Predict the output of the model
+        pass

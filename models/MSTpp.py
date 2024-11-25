@@ -1,4 +1,4 @@
-from ..base.base_model import BaseModel
+from base.base_model import BaseModel
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
@@ -6,6 +6,7 @@ from einops import rearrange
 import math
 import warnings
 from torch.nn.init import _calculate_fan_in_and_fan_out
+import numpy as np
 
 
 def _no_grad_trunc_normal_(tensor, mean, std, a, b):
@@ -319,8 +320,8 @@ class MST(nn.Module):
 
 class MST_Plus_Plus(nn.Module, BaseModel):
     def __init__(self, model_path, in_channels=3, out_channels=31, n_feat=31, stage=3):
-        super(MST_Plus_Plus, self).__init__()
-        super(BaseModel, self).__init__("MST++", model_path)
+        nn.Module.__init__(self)
+        BaseModel.__init__(self, "MST++", model_path)
         self.stage = stage
         self.conv_in = nn.Conv2d(
             in_channels, n_feat, kernel_size=3, padding=(3 - 1) // 2, bias=False
@@ -343,6 +344,12 @@ class MST_Plus_Plus(nn.Module, BaseModel):
         hb, wb = 8, 8
         pad_h = (hb - h_inp % hb) % hb
         pad_w = (wb - w_inp % wb) % wb
+
+        if pad_h >= h_inp:
+            pad_h = h_inp - 1
+        if pad_w >= w_inp:
+            pad_w = w_inp - 1
+
         x = F.pad(x, [0, pad_w, 0, pad_h], mode="reflect")
         x = self.conv_in(x)
         h = self.body(x)
@@ -359,6 +366,7 @@ class MST_Plus_Plus(nn.Module, BaseModel):
             {k.replace("module.", ""): v for k, v in checkpoint["state_dict"].items()},
             strict=True,
         )
+        model.eval()
         self.loaded_model = model
         return model
 
@@ -366,3 +374,17 @@ class MST_Plus_Plus(nn.Module, BaseModel):
         self.loaded_model = None
         torch.cuda.empty_cache()
         return
+
+    def predict(self, img):
+        model = self.get_model()
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        with torch.no_grad():
+            img = (
+                torch.tensor(img, dtype=torch.float32)
+                .permute(2, 0, 1)
+                .unsqueeze(0)
+                .to(device)
+            )
+            pred = model(img)
+            pred = pred.cpu().numpy()
+        return pred[0]
