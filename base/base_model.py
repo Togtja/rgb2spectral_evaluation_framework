@@ -13,11 +13,13 @@ class BaseModel(ABC):
     def get_model(self):
         # Load the model from the model_path
         # use this method to load the model, instead of loading it in the constructor
+        # If model is already loaded, return it
         pass
 
     @abstractmethod
     def unload_model(self):
         # Unload the model from memory
+        # Not necessary for all models
         pass
 
     @abstractmethod

@@ -6,7 +6,6 @@ from einops import rearrange
 import math
 import warnings
 from torch.nn.init import _calculate_fan_in_and_fan_out
-import numpy as np
 
 
 def _no_grad_trunc_normal_(tensor, mean, std, a, b):
@@ -20,9 +19,9 @@ def _no_grad_trunc_normal_(tensor, mean, std, a, b):
             stacklevel=2,
         )
     with torch.no_grad():
-        l = norm_cdf((a - mean) / std)
-        u = norm_cdf((b - mean) / std)
-        tensor.uniform_(2 * l - 1, 2 * u - 1)
+        lower_bound = norm_cdf((a - mean) / std)
+        upper_bound = norm_cdf((b - mean) / std)
+        tensor.uniform_(2 * lower_bound - 1, 2 * upper_bound - 1)
         tensor.erfinv_()
         tensor.mul_(std * math.sqrt(2.0))
         tensor.add_(mean)
@@ -320,20 +319,14 @@ class MST(nn.Module):
 
 class MST_Plus_Plus(nn.Module, BaseModel):
     def __init__(self, model_path, in_channels=3, out_channels=31, n_feat=31, stage=3):
+        self.model_path = model_path
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.n_feat = n_feat
+        self.stage = stage
+        self.loaded_model = None
         nn.Module.__init__(self)
         BaseModel.__init__(self, "MST++", model_path)
-        self.stage = stage
-        self.conv_in = nn.Conv2d(
-            in_channels, n_feat, kernel_size=3, padding=(3 - 1) // 2, bias=False
-        )
-        modules_body = [
-            MST(dim=31, stage=2, num_blocks=[1, 1, 1]) for _ in range(stage)
-        ]
-        self.body = nn.Sequential(*modules_body)
-        self.conv_out = nn.Conv2d(
-            n_feat, out_channels, kernel_size=3, padding=(3 - 1) // 2, bias=False
-        )
-        self.loaded_model = None
 
     def forward(self, x):
         """
@@ -360,6 +353,26 @@ class MST_Plus_Plus(nn.Module, BaseModel):
     def get_model(self):
         if self.loaded_model is not None:
             return self.loaded_model
+
+        self.conv_in = nn.Conv2d(
+            self.in_channels,
+            self.n_feat,
+            kernel_size=3,
+            padding=(3 - 1) // 2,
+            bias=False,
+        )
+        modules_body = [
+            MST(dim=31, stage=2, num_blocks=[1, 1, 1]) for _ in range(self.stage)
+        ]
+        self.body = nn.Sequential(*modules_body)
+        self.conv_out = nn.Conv2d(
+            self.n_feat,
+            self.out_channels,
+            kernel_size=3,
+            padding=(3 - 1) // 2,
+            bias=False,
+        )
+        self.loaded_model = None
         model = self.cuda()
         checkpoint = torch.load(self.model_path)
         model.load_state_dict(

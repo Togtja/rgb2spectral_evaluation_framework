@@ -16,15 +16,5 @@ class BaseDataset(ABC):
         return 1
 
     @abstractmethod
-    def load_dataset(self):
-        # Load the dataset from the dataset_path
-        pass
-
-    @abstractmethod
-    def unload_dataset(self):
-        # Unload the dataset from memory
-        pass
-
-    @abstractmethod
     def get_next_img(self):
         pass
