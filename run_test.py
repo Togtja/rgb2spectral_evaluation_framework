@@ -7,7 +7,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 from base.base_test import VisualTest, ScoreTest
 from models import App, MSTpp
 from tests import mrae, psnr, rmse
-from datasets import NTIRE_2022, Generic_Matlab, SIDQ
+from datasets import NTIRE_2022, SIDQ
 
 # TODO: make it a cli tool and take in arguments
 all_datasets = [
