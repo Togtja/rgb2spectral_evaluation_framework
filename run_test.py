@@ -1,6 +1,7 @@
+from base.base_test import VisualTest, ScoreTest
 from models import App, MSTpp
-from tests import mrae
-from datasets import NTIRE_2022, Generic_Matlab
+from tests import mrae, psnr, rmse
+from datasets import NTIRE_2022, Generic_Matlab, SIDQ
 
 # TODO: make it a cli tool and take in arguments
 all_datasets = [
@@ -14,6 +15,8 @@ all_models = [
 ]
 all_tests = [
     mrae.MRAE(),
+    psnr.PSNR(),
+    rmse.RMSE(),
 ]
 for dataset in all_datasets:
     for model in all_models:
