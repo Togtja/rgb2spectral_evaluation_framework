@@ -1,3 +1,5 @@
+import os
+import json
 from base.base_test import VisualTest, ScoreTest
 from models import App, MSTpp
 from tests import mrae, psnr, rmse
@@ -18,15 +20,60 @@ all_tests = [
     psnr.PSNR(),
     rmse.RMSE(),
 ]
+
+# Remove tests from the results if you want to rerun them but not the others
+remove_tests = []
+USE_OLD_RESULTS = True
+if USE_OLD_RESULTS and os.path.exists("results.json"):
+    with open("results.json", "r") as f:
+        results = json.load(f)
+    for remove_test in remove_tests:
+        for dataset in results:
+            for model in results[dataset]:
+                if remove_test in results[dataset][model]:
+                    del results[dataset][model][remove_test]
+                else:
+                    print(
+                        f"Test {remove_test} not found in results for {dataset} {model}"
+                    )
+else:
+    results = {}
+
+
+def save_results():
+    with open("results.json", "w") as f:
+        json.dump(results, f, indent=4)
+
+
 for dataset in all_datasets:
+    if dataset.get_name() not in results:
+        results[dataset.get_name()] = {}
     for model in all_models:
-        model_predictions = []
+        if model.get_name() not in results[dataset.get_name()]:
+            results[dataset.get_name()][model.get_name()] = {}
         model.get_model()
         for test in all_tests:
-            print(f"Running test: {test.get_name()} on model: {model.get_name()}")
-            result = test.run_test(model, dataset)
-            print(f"Test: {test.get_name()} Result: {result}")
-            print(f"Test: {test.get_name()} Time: {test.get_time()}")
+            # Skip if the test has already been run
+            if test.get_name() in results[dataset.get_name()][model.get_name()]:
+                continue
+            print(
+                f"Running test: {test.get_name()} on model: {model.get_name()} with dataset: {dataset.get_name()}"
+            )
+            test.run_test(model, dataset, "average")
+            # if test.type() == TestType.SCORE:
+            if isinstance(test, ScoreTest):
+                result, result_per_iamge = test.get_results()
+                print(f"Test: {test.get_name()} Result: {result}")
+                print(f"Test: {test.get_name()} Time: {test.get_time()}")
+                results[dataset.get_name()][model.get_name()][test.get_name()] = {
+                    "result": result,
+                    "result_type": "average",
+                    "time": test.get_time(),
+                }
+                save_results()
+            elif isinstance(test, VisualTest):
+                test.plot_visuals()
+            else:
+                print(f"Test type not recognized: {type(test).__name__}")
+            # TODO Add the results per image to the results dictionary
         model.unload_model()
-
-# TODO: Write the results to a file
