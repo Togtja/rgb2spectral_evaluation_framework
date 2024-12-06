@@ -1,10 +1,10 @@
 from models import App, MSTpp
 from tests import mrae
-from datasets import NITRE_2022, Generic_Matlab
+from datasets import NTIRE_2022, Generic_Matlab
 
 # TODO: make it a cli tool and take in arguments
 all_datasets = [
-    NITRE_2022.NITRE_2022(dataset_path="datasets/NITRE_2022"),
+    NTIRE_2022.NTIRE_2022(dataset_path="datasets/NITRE_2022"),
     #    Generic_Matlab.Generic_Matlab(dataset_path="datasets/Generic_Matlab"),
 ]
 all_models = [

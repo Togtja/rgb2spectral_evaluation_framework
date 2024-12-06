@@ -8,16 +8,9 @@ import h5py
 import cv2
 
 
-class NITRE_2022(BaseDataset):
+class NTIRE_2022(BaseDataset):
     def __init__(self, dataset_path):
-        super().__init__("NITRE_2022", dataset_path)
-        self.folders = [
-            "Train_Spec",
-            "Train_RGB",
-            "validation_spectral",
-            "validation_rgb",
-            "test_rgb",
-        ]
+        super().__init__("NTIRE_2022", dataset_path)
 
     def download_dataset(self):
         DATASET_PATH = f"./datasets/{self.name}"
@@ -80,7 +73,7 @@ class NITRE_2022(BaseDataset):
         for file in os.listdir(train_rgb_directory):
             matlab_file = file.replace(".jpg", ".mat")
             matlab_file = train_spec_directory + "/" + matlab_file
-            print(f"Processing {matlab_file}")
+            # print(f"Processing {matlab_file}")
             try:
                 valid_img = load_matlab_file(matlab_file)
                 # Transpose valid_img to match model_prediction shape
