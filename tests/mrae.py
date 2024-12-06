@@ -6,11 +6,11 @@ import numpy as np
 import time
 
 
-class MRAE(BaseTest):
+class MRAE(ScoreTest):
     def __init__(self):
         super().__init__("MRAE")
 
-    def run_test(self, model: BaseModel, dataset: BaseDataset):
+    def run_test(self, model: BaseModel, dataset: BaseDataset, result_type):
         all_mrae = []
         start_time = time.time()
         for img, validation_img in dataset.get_next_img():
@@ -23,8 +23,7 @@ class MRAE(BaseTest):
             mare = np.mean(error)
             all_mrae.append(mare)
         self.time = time.time() - start_time
-        mean_error = np.mean(all_mrae)
-        return mean_error, all_mrae
+        self.results = self.correct_result_type(all_mrae, result_type)
 
     def get_time(self):
         return self.time
