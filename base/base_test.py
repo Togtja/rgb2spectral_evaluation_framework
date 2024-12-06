@@ -12,9 +12,28 @@ class BaseTest(ABC):
         return self.name
 
     @abstractmethod
+    def get_time(self):
+        return self.time
+
+
+class ScoreTest(BaseTest, ABC):
+    def __init__(self, name):
+        super().__init__(name)
+
+
+    @abstractmethod
     def run_test(self, model: BaseModel, dataset: BaseDataset):
         pass
 
     @abstractmethod
-    def get_time(self):
-        return self.time
+    def get_results(self):
+        pass
+
+
+class VisualTest(BaseTest, ABC):
+    def __init__(self, name):
+        super().__init__(name)
+
+    @abstractmethod
+    def plot_visuals(self):
+        pass
