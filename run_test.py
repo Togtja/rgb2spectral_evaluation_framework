@@ -1,5 +1,9 @@
 import os
 import json
+
+# Set the environment variable to allow multiple OpenMP runtimes
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 from base.base_test import VisualTest, ScoreTest
 from models import App, MSTpp
 from tests import mrae, psnr, rmse
@@ -38,6 +42,20 @@ if USE_OLD_RESULTS and os.path.exists("results.json"):
                     )
 else:
     results = {}
+
+
+DOWNLOAD_DATASETS = True
+if DOWNLOAD_DATASETS:
+    for dataset in all_datasets:
+        dataset.download_dataset()
+    print("Downloaded all datasets")
+    exit(0)
+
+PREPROCESS_DATASETS = True
+if PREPROCESS_DATASETS:
+    for dataset in all_datasets:
+        dataset.preprocess()
+    exit(0)
 
 
 def save_results():
