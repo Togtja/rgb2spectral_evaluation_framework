@@ -1,4 +1,4 @@
-from base.base_test import BaseTest
+from base.base_test import ScoreTest
 from base.base_model import BaseModel
 from base.base_dataset import BaseDataset
 
@@ -14,12 +14,15 @@ class MRAE(ScoreTest):
         all_mrae = []
         start_time = time.time()
         for img, validation_img in dataset.get_next_img():
+            mask = validation_img == 0
+            if mask.any():
+                validation_wo_zeros = validation_img.copy()
+                validation_wo_zeros[mask] = 1e-8  # Avoid division by zero
+            else:
+                validation_wo_zeros = validation_img
             model_prediction = model.predict(img)
-            error = np.abs((model_prediction - validation_img) / validation_img)
-            if np.isnan(error).any() or np.isinf(error).any():
-                # print(f"Error: {error}")
-                continue
-
+            assert model_prediction.shape == validation_img.shape
+            error = np.abs((validation_img - model_prediction) / validation_wo_zeros)
             mare = np.mean(error)
             all_mrae.append(mare)
         self.time = time.time() - start_time
