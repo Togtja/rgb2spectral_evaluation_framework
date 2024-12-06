@@ -4,7 +4,8 @@ from datasets import NTIRE_2022, Generic_Matlab
 
 # TODO: make it a cli tool and take in arguments
 all_datasets = [
-    NTIRE_2022.NTIRE_2022(dataset_path="datasets/NITRE_2022"),
+    SIDQ.SIDQ(dataset_path="datasets/SIDQ"),
+    NTIRE_2022.NTIRE_2022(dataset_path="datasets/NTIRE_2022"),
     #    Generic_Matlab.Generic_Matlab(dataset_path="datasets/Generic_Matlab"),
 ]
 all_models = [
