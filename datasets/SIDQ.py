@@ -60,8 +60,6 @@ class SIDQ(BaseDataset):
                 )
             else:
                 gt = pca_160_to_31(f"{gt_images_path}/{base_name}.mat")
-
-            print("gt shape", gt.shape)
             # Read as RGB
             img = cv2.imread(f"{rgb_images_path}/{img_name}", cv2.IMREAD_COLOR)
             yield img, gt
@@ -70,8 +68,11 @@ class SIDQ(BaseDataset):
 def pca_160_to_31(img_path):
     # Original spectral image is 160 bands from 410 to 1000 nm
     # We will reduce it to 31 bands using PCA
-    img = h5py.File(img_path, "r")["hsi"]
-    # Only use the visible bands
+    # Original image shape is (C, H, W) where C is 160
+    with h5py.File(img_path, "r") as f:
+        img = f["hsi"][:]
+
+    # Transpose to (H, W, C)
     img = np.transpose(img, (1, 2, 0))
 
     # Flatten the hyperspectral data
@@ -80,6 +81,7 @@ def pca_160_to_31(img_path):
     # Apply PCA
     pca = PCA(n_components=31)
     hsi_pca = pca.fit_transform(hsi_flattened)
-    hsi_pca_reshaped = hsi_pca.reshape(-1, img.shape[0], img.shape[1])
-    print("hsi_pca_reshaped", hsi_pca_reshaped.shape)
+
+    # Reshape back to (H, W, 31) and then transpose to (31, H, W)
+    hsi_pca_reshaped = hsi_pca.reshape(img.shape[0], img.shape[1], 31)
     return hsi_pca_reshaped

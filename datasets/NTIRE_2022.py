@@ -61,8 +61,9 @@ class NTIRE_2022(BaseDataset):
             try:
                 valid_img = load_matlab_file(matlab_file)
                 # Transpose valid_img to match model_prediction shape
-                valid_img = np.transpose(valid_img, (0, 2, 1))
-                img = cv2.imread(train_rgb_directory + "/" + file)
+
+                valid_img = np.transpose(valid_img, (2, 1, 0))
+                img = cv2.imread(train_rgb_directory + "/" + file, cv2.IMREAD_COLOR)
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 yield img, valid_img
             except OSError as e:
@@ -74,4 +75,5 @@ def load_matlab_file(file_path):
     with h5py.File(file_path, "r") as f:
         # Assuming 'cube' is the dataset you want to read
         data = f["cube"][:]
-        return np.array(data)
+
+    return np.array(data)

@@ -88,8 +88,7 @@ class App(BaseModel):
 
             recovery_part = rgb_nearest @ RegMat_a_plus_plus[i].get_matrix()
             recovery[is_nearest, :] = recovery_part
-
-        return recovery.T.reshape(31, height, width)
+        return recovery.T.reshape(height, width, 31)
 
 
 def get_polynomial_terms(num_of_var, highest_order, root):
