@@ -6,6 +6,8 @@ from einops import rearrange
 import math
 import warnings
 from torch.nn.init import _calculate_fan_in_and_fan_out
+import numpy as np
+import itertools
 
 
 def _no_grad_trunc_normal_(tensor, mean, std, a, b):
@@ -391,13 +393,37 @@ class MST_Plus_Plus(nn.Module, BaseModel):
     def predict(self, img):
         model = self.get_model()
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        rgb = np.expand_dims(np.transpose(img, [2, 0, 1]), axis=0).copy()
+        rgb = torch.from_numpy(rgb).float().cuda()
         with torch.no_grad():
-            img = (
-                torch.tensor(img, dtype=torch.float32)
-                .permute(2, 0, 1)
-                .unsqueeze(0)
-                .to(device)
-            )
-            pred = model(img)
-            pred = pred.cpu().numpy()
-        return pred[0]
+            outputs = []
+            opts = itertools.product((False, True), (False, True), (False, True))
+            for xflip, yflip, transpose in opts:
+                data = rgb.clone()
+                data = _transform(data, xflip, yflip, transpose)
+                data = model(data)
+                outputs.append(_transform(data, xflip, yflip, transpose, reverse=True))
+            result = torch.stack(outputs, 0).mean(0)
+            result = result.cpu().numpy() * 1.0
+            result = np.transpose(np.squeeze(result), [1, 2, 0])
+            result = np.minimum(result, 1.0)
+            result = np.maximum(result, 0)
+        return result
+
+
+def _transform(data, xflip, yflip, transpose, reverse=False):
+    if not reverse:  # forward transform
+        if xflip:
+            data = torch.flip(data, [3])
+        if yflip:
+            data = torch.flip(data, [2])
+        if transpose:
+            data = torch.transpose(data, 2, 3)
+    else:  # reverse transform
+        if transpose:
+            data = torch.transpose(data, 2, 3)
+        if yflip:
+            data = torch.flip(data, [2])
+        if xflip:
+            data = torch.flip(data, [3])
+    return data
