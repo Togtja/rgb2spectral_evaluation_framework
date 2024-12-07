@@ -15,6 +15,7 @@ all_datasets = [
     NTIRE_2022.NTIRE_2022(dataset_path="datasets/NTIRE_2022"),
     #    Generic_Matlab.Generic_Matlab(dataset_path="datasets/Generic_Matlab"),
 ]
+# TODO: Import models when they are called and not all at once
 all_models = [
     App.App(model_path="models/A++/model_a_plus_plus_retrain.pkl"),
     MSTpp.MST_Plus_Plus(model_path="models/MSTpp/mst_plus_plus.pth"),
@@ -44,14 +45,14 @@ else:
     results = {}
 
 
-DOWNLOAD_DATASETS = True
+DOWNLOAD_DATASETS = False
 if DOWNLOAD_DATASETS:
     for dataset in all_datasets:
         dataset.download_dataset()
     print("Downloaded all datasets")
     exit(0)
 
-PREPROCESS_DATASETS = True
+PREPROCESS_DATASETS = False
 if PREPROCESS_DATASETS:
     for dataset in all_datasets:
         dataset.preprocess()
@@ -77,15 +78,15 @@ for dataset in all_datasets:
             print(
                 f"Running test: {test.get_name()} on model: {model.get_name()} with dataset: {dataset.get_name()}"
             )
-            test.run_test(model, dataset, "average")
+            test.run_test(model, dataset)
             # if test.type() == TestType.SCORE:
             if isinstance(test, ScoreTest):
-                result, result_per_iamge = test.get_results()
+                result, result_per_iamge = test.get_results(pooling_method="average")
                 print(f"Test: {test.get_name()} Result: {result}")
                 print(f"Test: {test.get_name()} Time: {test.get_time()}")
                 results[dataset.get_name()][model.get_name()][test.get_name()] = {
                     "result": result,
-                    "result_type": "average",
+                    "pooling_method": "average",
                     "time": test.get_time(),
                 }
                 save_results()
