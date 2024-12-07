@@ -25,6 +25,7 @@ class NTIRE_2022(BaseDataset):
             "TRAIN_RGB": "https://drive.google.com/file/d/1A4GUXhVc5k5d_79gNvokEtVPG290qVkd/view",
             "VALIDATION_SPECTRAL": "https://drive.google.com/file/d/12QY8LHab3gzljZc3V6UyHgBee48wh9un/view",
             "VALIDATION_RGB": "https://drive.google.com/file/d/19vBR_8Il1qcaEZsK42aGfvg5lCuvLh1A/view",
+            "314_PATCH": "https://drive.google.com/file/d/1DOsjSMC9jHMBF0KzHTipbjwZbqyVF20K/view",
         }
 
         train_rgb_directory = DATASET_PATH + "/Train_RGB"
@@ -37,6 +38,8 @@ class NTIRE_2022(BaseDataset):
             # Unzip the files
             if "SPECTRAL" in file_name:
                 utils.unzip_file(zip_file, train_spec_directory)
+            elif "314_PATCH" in file_name:
+                continue
             else:
                 utils.unzip_file(zip_file, DATASET_PATH)
 
@@ -48,6 +51,12 @@ class NTIRE_2022(BaseDataset):
                         if file.endswith(".jpg"):
                             os.rename(f"{root}/{file}", f"{train_rgb_directory}/{file}")
                 os.rmdir(validation_rgb_directory)
+            # Apply 314_PATCH
+            os.remove(f"{train_spec_directory}/ARAD_1K_0314.mat")
+            os.rename(
+                f"{DATASET_PATH}/314_PATCH.zip",  # Not actually a zip file
+                f"{train_spec_directory}/ARAD_1K_0314.mat",
+            )
         return 0
 
     def get_next_img(self):
