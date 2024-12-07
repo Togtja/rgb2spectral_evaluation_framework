@@ -11,7 +11,7 @@ class MSE(ScoreTest):
         super().__init__("MSE")
 
     def COMPUTE_MSE(a, b):
-        return np.power((a - b) ** 2).mean()
+        return np.power(a - b, 2).mean()
 
     def run_test(self, model: BaseModel, dataset: BaseDataset):
         all_mse = []
