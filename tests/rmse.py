@@ -21,7 +21,4 @@ class RMSE(ScoreTest):
             rmse = np.sqrt(mse)
             all_rmse.append(rmse)
         self.time = time.time() - start_time
-        self.results = self.correct_result_type(all_rmse, result_type)
-
-    def get_time(self):
-        return self.time
+        self.results_per_image = all_rmse

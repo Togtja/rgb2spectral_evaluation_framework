@@ -20,25 +20,32 @@ class BaseTest(ABC):
 class ScoreTest(BaseTest, ABC):
     def __init__(self, name):
         super().__init__(name)
+        # The array of results for each image
+        self.results_per_image = None
+        # Time in seconds to run the test
+        self.time = None
 
-    def correct_result_type(self, full_results, result_type):
+    def correct_result_type(self, result_type):
         if result_type == "mean":
-            return np.mean(full_results)
+            return np.mean(self.results_per_image)
         elif result_type == "median":
-            return np.median(full_results)
+            return np.median(self.results_per_image)
         elif result_type == "average":
-            return np.average(full_results)
+            return np.average(self.results_per_image)
         else:
             print("Invalid result type, returning full results")
-            return full_results
+            return self.results_per_image
 
     @abstractmethod
     def run_test(self, model: BaseModel, dataset: BaseDataset, result_type="mean"):
         pass
 
-    @abstractmethod
     def get_results(self):
-        pass
+        results = self.correct_result_type("average")
+        return results, self.results_per_image
+
+    def get_time(self):
+        return self.time
 
 
 class VisualTest(BaseTest, ABC):

@@ -22,7 +22,4 @@ class MSE(ScoreTest):
             mse = np.mean((validation_img - model_prediction) ** 2)
             all_mse.append(mse)
         self.time = time.time() - start_time
-        self.results = self.correct_result_type(all_mse, result_type)
-
-    def get_time(self):
-        return self.time
+        self.results_per_image = all_mse

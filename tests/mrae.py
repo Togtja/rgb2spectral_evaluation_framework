@@ -26,7 +26,4 @@ class MRAE(ScoreTest):
             mare = np.mean(error)
             all_mrae.append(mare)
         self.time = time.time() - start_time
-        self.results = self.correct_result_type(all_mrae, result_type)
-
-    def get_time(self):
-        return self.time
+        self.results_per_image = all_mrae

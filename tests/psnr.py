@@ -10,9 +10,7 @@ import time
 class PSNR(ScoreTest):
     def __init__(self):
         super().__init__("PSNR")
-        self.results = None
         self.time = None
-        self.full_results = None
 
     def run_test(self, model: BaseModel, dataset: BaseDataset, result_type):
         psnr_values = []
@@ -26,11 +24,4 @@ class PSNR(ScoreTest):
             psnr = 10 * np.log10((peak**2) / mse)
             psnr_values.append(psnr)
         self.time = time.time() - start_time
-        self.results = self.correct_result_type(psnr_values, result_type)
-        self.full_results = psnr_values
-
-    def get_time(self):
-        return self.time
-
-    def get_results(self):
-        return self.results, self.full_results
+        self.results_per_image = psnr_values
