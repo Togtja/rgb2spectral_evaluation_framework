@@ -15,11 +15,11 @@ class NTIRE_2022(BaseDataset):
         DATASET_PATH = self.dataset_path
 
         # Download the dataset from the internet
-        # if not os.path.exists(DATASET_PATH):
-        #    os.makedirs(DATASET_PATH)
-        # else:
-        #    print(f"Dataset {self.name} already exists. Skipping download.")
-        #    return 0
+        if not os.path.exists(DATASET_PATH):
+            os.makedirs(DATASET_PATH)
+        else:
+            print(f"Dataset {self.name} already exists. Skipping download.")
+            return 0
         google_downloads = {
             "TRAIN_SPECTRAL": "https://drive.google.com/file/d/1FQBfDd248dCKClR-BpX5V2drSbeyhKcq/view",
             "TRAIN_RGB": "https://drive.google.com/file/d/1A4GUXhVc5k5d_79gNvokEtVPG290qVkd/view",
