@@ -12,7 +12,7 @@ class PSNR(ScoreTest):
         super().__init__("PSNR")
         self.time = None
 
-    def run_test(self, model: BaseModel, dataset: BaseDataset, result_type):
+    def run_test(self, model: BaseModel, dataset: BaseDataset):
         psnr_values = []
         start_time = time.time()
         for img, validation_img in dataset.get_next_img():

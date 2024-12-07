@@ -11,7 +11,7 @@ class RMSE(ScoreTest):
     def __init__(self):
         super().__init__("RMSE")
 
-    def run_test(self, model: BaseModel, dataset: BaseDataset, result_type):
+    def run_test(self, model: BaseModel, dataset: BaseDataset):
         all_rmse = []
         start_time = time.time()
         for img, validation_img in dataset.get_next_img():

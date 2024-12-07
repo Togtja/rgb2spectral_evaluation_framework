@@ -13,7 +13,7 @@ class MSE(ScoreTest):
     def COMPUTE_MSE(a, b):
         return np.power((a - b) ** 2).mean()
 
-    def run_test(self, model: BaseModel, dataset: BaseDataset, result_type):
+    def run_test(self, model: BaseModel, dataset: BaseDataset):
         all_mse = []
         start_time = time.time()
         for img, validation_img in dataset.get_next_img():

@@ -10,7 +10,7 @@ class MRAE(ScoreTest):
     def __init__(self):
         super().__init__("MRAE")
 
-    def run_test(self, model: BaseModel, dataset: BaseDataset, result_type):
+    def run_test(self, model: BaseModel, dataset: BaseDataset):
         all_mrae = []
         start_time = time.time()
         for img, validation_img in dataset.get_next_img():

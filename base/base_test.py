@@ -25,23 +25,23 @@ class ScoreTest(BaseTest, ABC):
         # Time in seconds to run the test
         self.time = None
 
-    def correct_result_type(self, result_type):
-        if result_type == "mean":
-            return np.mean(self.results_per_image)
-        elif result_type == "median":
-            return np.median(self.results_per_image)
-        elif result_type == "average":
-            return np.average(self.results_per_image)
+    def result_pooling(self, pooling):
+        if pooling == "mean":
+            return float(np.mean(self.results_per_image))
+        elif pooling == "median":
+            return float(np.median(self.results_per_image))
+        elif pooling == "average":
+            return float(np.average(self.results_per_image))
         else:
             print("Invalid result type, returning full results")
             return self.results_per_image
 
     @abstractmethod
-    def run_test(self, model: BaseModel, dataset: BaseDataset, result_type="mean"):
+    def run_test(self, model: BaseModel, dataset: BaseDataset):
         pass
 
-    def get_results(self):
-        results = self.correct_result_type("average")
+    def get_results(self, pooling_method="average"):
+        results = self.result_pooling(pooling_method)
         return results, self.results_per_image
 
     def get_time(self):
