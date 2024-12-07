@@ -5,7 +5,6 @@ import my_utils.utils as utils
 
 import numpy as np
 import h5py
-import cv2
 
 
 class NTIRE_2022(BaseDataset):
@@ -63,8 +62,7 @@ class NTIRE_2022(BaseDataset):
                 # Transpose valid_img to match model_prediction shape
 
                 valid_img = np.transpose(valid_img, (2, 1, 0))
-                img = cv2.imread(train_rgb_directory + "/" + file, cv2.IMREAD_COLOR)
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                img = utils.read_img(train_rgb_directory + "/" + file)
                 yield img, valid_img
             except OSError as e:
                 print(f"Error processing {matlab_file}: {e}")

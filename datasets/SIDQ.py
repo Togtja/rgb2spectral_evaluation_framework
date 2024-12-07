@@ -3,7 +3,6 @@ import my_utils.utils as utils
 import os
 import h5py
 import numpy as np
-import cv2
 from sklearn.decomposition import PCA
 
 
@@ -61,7 +60,7 @@ class SIDQ(BaseDataset):
             else:
                 gt = pca_160_to_31(f"{gt_images_path}/{base_name}.mat")
             # Read as RGB
-            img = cv2.imread(f"{rgb_images_path}/{img_name}", cv2.IMREAD_COLOR)
+            img = utils.read_img(f"{rgb_images_path}/{img_name}")
             yield img, gt
 
 

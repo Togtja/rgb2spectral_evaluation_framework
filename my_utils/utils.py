@@ -3,6 +3,7 @@
 import gdown
 import zipfile
 import requests
+import cv2
 
 
 def download_file_from_google_drive(url, output):
@@ -25,3 +26,11 @@ def download_file(url, output):
         with open(output, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
+
+
+def read_img(img_path):
+    # Read an image from a file
+    img = cv2.imread(img_path)
+    # Ensure the image is in RGB format
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    return img
