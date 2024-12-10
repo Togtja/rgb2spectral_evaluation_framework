@@ -15,11 +15,16 @@ class PSNR(ScoreTest):
     def run_test(self, model: BaseModel, dataset: BaseDataset):
         psnr_values = []
         start_time = time.time()
-        PEAK_NOISE = 255
+        PEAK_NOISE = 255  # Maximum pixel value
         for img, validation_img in dataset.get_next_img():
             model_prediction = model.predict(img)
             assert model_prediction.shape == validation_img.shape
-            mse = MSE.COMPUTE_MSE(validation_img, model_prediction)
+            # Scale the normalized images to the range [0, 255]
+            validation_img_scaled = validation_img * PEAK_NOISE
+            model_prediction_scaled = model_prediction * PEAK_NOISE
+            validation_img_scaled = validation_img_scaled.astype(np.uint8)
+            model_prediction_scaled = model_prediction_scaled.astype(np.uint8)
+            mse = MSE.COMPUTE_MSE(validation_img_scaled, model_prediction_scaled)
             psnr = 10 * np.log10((PEAK_NOISE**2) / mse)
             psnr_values.append(psnr)
         self.time = time.time() - start_time
