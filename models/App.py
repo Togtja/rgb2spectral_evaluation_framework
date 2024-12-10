@@ -65,6 +65,7 @@ class App(BaseModel):
         return knn_model, RegMat_a_plus_plus
 
     def recover_a_plus_plus(self, rgb, knn_model, RegMat_a_plus_plus):
+        rgb = rgb.transpose(1, 2, 0)
         # transform RGB to primary estimate and normalize
         pr_rels_model = self.load_pr_rels()
 
@@ -88,7 +89,7 @@ class App(BaseModel):
 
             recovery_part = rgb_nearest @ RegMat_a_plus_plus[i].get_matrix()
             recovery[is_nearest, :] = recovery_part
-        return recovery.T.reshape(height, width, 31)
+        return recovery.T.reshape(31, height, width)
 
 
 def get_polynomial_terms(num_of_var, highest_order, root):
@@ -147,7 +148,8 @@ def rgb2poly(rgb_data, poly_order, root):
 
 def recover_pr_rels(rgb, RegMat_pr_rels):
     # get the polynomial expansion of RGB
-    height, width, dim = rgb.shape
+
+    height, width, _dim = rgb.shape
     rgb = rgb.reshape(3, -1).T
     poly_rgb = rgb2poly(rgb, 6, root=False)
 

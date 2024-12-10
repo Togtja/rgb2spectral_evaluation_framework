@@ -68,11 +68,9 @@ class NTIRE_2022(BaseDataset):
             matlab_file = train_spec_directory + "/" + matlab_file
             try:
                 valid_img = load_matlab_file(matlab_file)
-                # Transpose valid_img to match model_prediction shape
-
-                valid_img = np.transpose(valid_img, (2, 1, 0))
                 img = utils.read_img(train_rgb_directory + "/" + file)
-                yield img, valid_img
+                img = np.transpose(img, [2, 0, 1])
+                yield np.ascontiguousarray(img), np.ascontiguousarray(valid_img)
             except OSError as e:
                 print(f"Error processing {matlab_file}: {e}")
                 continue
@@ -81,6 +79,7 @@ class NTIRE_2022(BaseDataset):
 def load_matlab_file(file_path):
     with h5py.File(file_path, "r") as f:
         # Assuming 'cube' is the dataset you want to read
-        data = f["cube"][:]
-
-    return np.array(data)
+        # data = f["cube"][:]
+        hyper = np.float32(np.array(f["cube"]))
+    # data = np.float32(np.array(data))
+    return np.transpose(hyper, [0, 2, 1])

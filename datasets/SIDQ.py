@@ -61,6 +61,7 @@ class SIDQ(BaseDataset):
                 gt = pca_160_to_31(f"{gt_images_path}/{base_name}.mat")
             # Read as RGB
             img = utils.read_img(f"{rgb_images_path}/{img_name}")
+            img = np.transpose(img, (2, 0, 1))
             yield img, gt
 
 
@@ -83,4 +84,9 @@ def pca_160_to_31(img_path):
 
     # Reshape back to (H, W, 31) and then transpose to (31, H, W)
     hsi_pca_reshaped = hsi_pca.reshape(img.shape[0], img.shape[1], 31)
+    hsi_pca_reshaped = np.transpose(hsi_pca_reshaped, (2, 0, 1))
+    # Normalize the data
+    hsi_pca_reshaped = (hsi_pca_reshaped - hsi_pca_reshaped.min()) / (
+        hsi_pca_reshaped.max() - hsi_pca_reshaped.min()
+    )
     return hsi_pca_reshaped

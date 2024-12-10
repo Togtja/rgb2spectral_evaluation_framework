@@ -4,6 +4,7 @@ import gdown
 import zipfile
 import requests
 import cv2
+import numpy as np
 
 
 def download_file_from_google_drive(url, output):
@@ -33,4 +34,7 @@ def read_img(img_path):
     img = cv2.imread(img_path)
     # Ensure the image is in RGB format
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = np.float32(img)
+    # Normalize the image
+    img = (img - img.min()) / (img.max() - img.min())
     return img
