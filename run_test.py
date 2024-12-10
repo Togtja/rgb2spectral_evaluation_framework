@@ -7,13 +7,14 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 from base.base_test import VisualTest, ScoreTest
 from models import App, MSTpp
 from tests import mrae, psnr, rmse
-from datasets import NTIRE_2022, SIDQ
+from datasets import NTIRE_2022, SIDQ, CAVE
 
 # TODO: make it a cli tool and take in arguments
 all_datasets = [
     SIDQ.SIDQ(dataset_path="datasets/SIDQ"),
     NTIRE_2022.NTIRE_2022(dataset_path="datasets/NTIRE_2022"),
     #    Generic_Matlab.Generic_Matlab(dataset_path="datasets/Generic_Matlab"),
+    CAVE.CAVE(dataset_path="datasets/CAVE"),
 ]
 # TODO: Import models when they are called and not all at once
 all_models = [

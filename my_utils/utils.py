@@ -5,6 +5,7 @@ import zipfile
 import requests
 import cv2
 import numpy as np
+import h5py
 
 
 def download_file_from_google_drive(url, output):
@@ -38,3 +39,9 @@ def read_img(img_path):
     # Normalize the image
     img = (img - img.min()) / (img.max() - img.min())
     return img
+
+
+def save_mat(mat_path, numpy_array):
+    # Save an numpy array as a .mat file
+    with h5py.File(mat_path, "w") as f:
+        f.create_dataset("data", data=numpy_array)
